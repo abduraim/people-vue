@@ -1,34 +1,25 @@
 <template>
-    <h2>News list</h2>
+    <div class="news">
+        <h3 class="news__title">Последние новости</h3>
 
-    <div class="input-block">
-        <label for="news-count">Кол-во новостей</label>
-        <input id="news-count" type="number" step="1" min="1" v-model="newsCount">
-    </div>
-
-    <div class="input-block">
-        <label for="refresh-delay">Задержка обновления (сек.)</label>
-        <input id="refresh-delay" type="number" step="1" min="1" v-model="refreshDelay">
-    </div>
-
-    <div class="wrapper">
-        <transition-group name="list-complete" tag="div" class="news">
+        <transition-group name="list-complete" tag="div" class="news__list" :class="{loading}">
             <template v-for="newsItem in news" :key="newsItem.id">
                 <NewsItem class="news__item" :newsItem="newsItem" @remove="test" />
             </template>
         </transition-group>
     </div>
-
-
 </template>
 
 <script>
+import { useEventListener } from "../../composables/event";
+import { useFetch } from "../../composables/useFetch";
+import { ref } from 'vue'
+
 export default {
     name: "List",
     data() {
         return {
-            newsCount: 5,
-            refreshDelay: 5,
+            loading: false,
             news: [],
         }
     },
@@ -39,8 +30,11 @@ export default {
             })
         },
         fetchNews(countToLoad = 3) {
+
+
+
             let news = [];
-            for (let i = 1; i < countToLoad; i++) {
+            for (let i = 1; i <= countToLoad; i++) {
                 news.push({
                     id: i,
                     title: `title ${i}`,
@@ -61,16 +55,36 @@ export default {
             })
         },
     },
+    setup() {
+        const count = ref(0)
+
+        useEventListener(window, 'scroll', (event) => {
+            let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
+            console.log(bottomOfWindow)
+            // console.log(event);
+        });
+
+        console.log('asdf')
+        // expose to template and other options API hooks
+        return {
+            count
+        }
+    },
     mounted() {
-        this.news = this.fetchNews(this.newsCount);
-        this.initScroll();
+        this.news = this.fetchNews(this.$root.newsCount);
+        // this.initScroll();
     }
 }
 </script>
 
 <style lang="scss" scoped>
 .news {
+    &__title {
 
+    }
+    &__list {
+        position: relative;
+    }
     &__item {
         transition: all .8s ease;
         margin-bottom: 1rem;

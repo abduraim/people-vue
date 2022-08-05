@@ -7,9 +7,13 @@ import App from './App.vue';
 
 const app = createApp(App);
 
+import BaseInput from "./components/base/BaseInput.vue";
 import NewsItem from "./components/news/NewsItem.vue";
 
-app.component("NewsItem", NewsItem)
+app
+    .component("BaseInput", BaseInput)
+    .component("NewsItem", NewsItem);
+    
 
 app
     .use(router)

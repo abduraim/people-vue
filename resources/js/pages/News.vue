@@ -1,5 +1,5 @@
 <template>
-    <h2>News</h2>
+    <h2>Новости</h2>
     <router-view></router-view>
 </template>
 

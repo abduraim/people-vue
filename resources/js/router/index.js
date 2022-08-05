@@ -2,9 +2,8 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 const routes = [
     {
-        path: '/',
+        path: '',
         name: 'index',
-        redirect: '/news',
         children: [
             {
                 path: 'news',
@@ -23,7 +22,23 @@ const routes = [
                     },
                 ]
             },
-
+            {
+                path: 'settings',
+                name: 'settings',
+                component: () => import('../pages/Settings.vue'),
+                // children: [
+                //     {
+                //         path: '',
+                //         name: 'news-list',
+                //         component: () => import('../pages/news/List.vue'),
+                //     },
+                //     {
+                //         path: ':id',
+                //         name: 'news-item',
+                //         component: () => import('../pages/news/Item.vue')
+                //     },
+                // ]
+            },
         ]
     },
 ];
