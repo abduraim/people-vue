@@ -2,7 +2,7 @@
     <div class="news-item" v-if="newsItem" :class="ratingChangingClass">
         <div class="rating news-item__rating">
             <div class="rating__text">
-                Рэйтинг:
+                Рейтинг:
             </div>
             <button class="rating__btn rating__btn_type_decrease" @click="changeRating(-1)">-</button>
             <div class="rating__value">

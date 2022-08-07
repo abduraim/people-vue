@@ -7,6 +7,9 @@
         <nav class="app__nav">
             <ul class="navigation">
                 <li class="navigation__item">
+                    <router-link class="navigation__link" :to="{name: 'index'}">Главная</router-link>
+                </li>
+                <li class="navigation__item">
                     <router-link class="navigation__link" :to="{name: 'news-list'}">Новости</router-link>
                 </li>
                 <li class="navigation__item">
@@ -26,8 +29,8 @@ export default {
     name: "App",
     data() {
         return {
-            newsCount: 5,       // Кол-во выводимых новостей на страницу
-            refreshDelay: 5,    // Задержка обновления в секундах
+            newsCount: 2,       // Кол-во выводимых новостей на страницу
+            refreshDelay: 2,    // Задержка обновления в секундах
         }
     },
 }

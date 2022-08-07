@@ -1,29 +1,44 @@
 // fetch.js
-import { ref, isRef, unref, watchEffect } from 'vue'
+import { ref } from 'vue'
+import { getCurrentInstance } from 'vue'
 
-export function useFetch(url) {
+export function useFetch() {
     const data = ref(null)
     const error = ref(null)
+    const isLoading = ref(true)
     
-    function doFetch() {
+    const test = ref(0)
+    
+    const internalInstance = getCurrentInstance();
+    
+    function doFetch(payload) {
         // reset state before fetching..
-        data.value = null
-        error.value = null
-        // unref() unwraps potential refs
-        fetch(unref(url))
-            .then((res) => res.json())
-            .then((json) => (data.value = json))
-            .catch((err) => (error.value = err))
+        isLoading.value = true;
+        data.value = null;
+        error.value = null;
+    
+    
+        setTimeout(() => {
+    
+    
+            let news = [];
+            for (let i = 1; i <= payload.newsCount; i++) {
+                test.value += 1;
+                news.push({
+                    id: test.value,
+                    // id: uniqueId(),
+                    title: `title ${test.value}`,
+                    rating: Math.floor(Math.random() * 5),
+                    description: `description ${test.value}`,
+                    text: `text ${test.value}`
+                })
+            }
+            
+            data.value = news;
+            isLoading.value = false;
+        }, internalInstance.root.data.refreshDelay * 1000);
+        
     }
     
-    if (isRef(url)) {
-        // setup reactive re-fetch if input URL is a ref
-        watchEffect(doFetch)
-    } else {
-        // otherwise, just fetch once
-        // and avoid the overhead of a watcher
-        doFetch()
-    }
-    
-    return { data, error }
+    return { data, error, isLoading, doFetch }
 }

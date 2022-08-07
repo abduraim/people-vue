@@ -1,10 +1,9 @@
 <template>
     <div class="news">
         <h3 class="news__title">Последние новости</h3>
-
-        <transition-group name="list-complete" tag="div" class="news__list" :class="{loading}">
-            <template v-for="newsItem in news" :key="newsItem.id">
-                <NewsItem class="news__item" :newsItem="newsItem" @remove="test" />
+        <transition-group name="list-complete" tag="div" class="news__list" :class="{loading:isLoading}">
+            <template v-for="(newsItem, index) in news" :key="index">
+                <NewsItem class="news__item" :newsItem="newsItem" @remove="remove" />
             </template>
         </transition-group>
     </div>
@@ -13,26 +12,23 @@
 <script>
 import { useEventListener } from "../../composables/event";
 import { useFetch } from "../../composables/useFetch";
-import { ref } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 
 export default {
     name: "List",
     data() {
         return {
             loading: false,
-            news: [],
+            // news: [],
         }
     },
     methods: {
-        test(newsItem) {
+        removeNewsItem(newsItem) {
             this.news = this.news.filter(currentNewsItem => {
                 return currentNewsItem !== newsItem;
             })
         },
         fetchNews(countToLoad = 3) {
-
-
-
             let news = [];
             for (let i = 1; i <= countToLoad; i++) {
                 news.push({
@@ -56,22 +52,49 @@ export default {
         },
     },
     setup() {
-        const count = ref(0)
+        const isBottom = ref(false);
+        const news = ref([]);
 
-        useEventListener(window, 'scroll', (event) => {
-            let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-            console.log(bottomOfWindow)
-            // console.log(event);
+
+
+        const { data, error, isLoading, doFetch } = useFetch()
+
+
+        useEventListener(window, 'scroll', () => {
+            isBottom.value = document.documentElement.scrollTop + window.innerHeight ===
+                document.documentElement.offsetHeight;
+
+            if (isBottom.value && !isLoading.value) {
+                doFetch({newsCount: 3});
+            }
+
         });
 
-        console.log('asdf')
-        // expose to template and other options API hooks
+        onMounted(() => {
+            doFetch({newsCount: 5});
+        })
+
+        // news.value = data.value;
+
+        watchEffect(() => {
+            if (data.value) {
+                news.value = news.value.concat(data.value);
+                console.log(news.value);
+            }
+        });
+
+        function remove(newsItem) {
+            news.value = news.value.filter(currentNewsItem => {
+                return currentNewsItem !== newsItem;
+            })
+        }
+
         return {
-            count
+            news, data, error, isLoading, remove
         }
     },
     mounted() {
-        this.news = this.fetchNews(this.$root.newsCount);
+        // this.news = this.fetchNews(this.$root.newsCount);
         // this.initScroll();
     }
 }
