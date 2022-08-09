@@ -2,7 +2,7 @@
     <div class="news">
         <h3 class="news__title">Последние новости</h3>
         <transition-group name="list-complete" tag="div" class="news__list" :class="{loading:isLoading}">
-            <template v-for="(newsItem, index) in news" :key="index">
+            <template v-for="newsItem in news" :key="newsItem">
                 <NewsItem class="news__item" :newsItem="newsItem" @remove="remove" />
             </template>
         </transition-group>
@@ -11,92 +11,51 @@
 
 <script>
 import { useEventListener } from "../../composables/event";
-import { useFetch } from "../../composables/useFetch";
-import { ref, onMounted, watchEffect } from 'vue'
+import { useFetchNews } from "../../composables/useFetchNews";
+import { ref, onMounted, getCurrentInstance } from 'vue'
 
 export default {
     name: "List",
-    data() {
-        return {
-            loading: false,
-            // news: [],
-        }
-    },
-    methods: {
-        removeNewsItem(newsItem) {
-            this.news = this.news.filter(currentNewsItem => {
-                return currentNewsItem !== newsItem;
-            })
-        },
-        fetchNews(countToLoad = 3) {
-            let news = [];
-            for (let i = 1; i <= countToLoad; i++) {
-                news.push({
-                    id: i,
-                    title: `title ${i}`,
-                    rating: Math.floor(Math.random() * 5),
-                    description: `description ${i}`,
-                    text: `text ${i}`
-                })
-            }
-            return news;
-        },
-        initScroll() {
-            let self = this;
-            document.addEventListener('scroll', function () {
-                let bottomOfWindow = document.documentElement.scrollTop + window.innerHeight === document.documentElement.offsetHeight;
-                if (bottomOfWindow) {
-                    self.news = [...self.news, ...self.fetchNews(3)];
-                }
-            })
-        },
-    },
     setup() {
-        const isBottom = ref(false);
+        const internalInstance = getCurrentInstance();
+        const { fetchNews, isLoading } = useFetchNews()
+
         const news = ref([]);
-
-
-
-        const { data, error, isLoading, doFetch } = useFetch()
-
+        const bottomScrollOffset = 50;
 
         useEventListener(window, 'scroll', () => {
-            isBottom.value = document.documentElement.scrollTop + window.innerHeight ===
-                document.documentElement.offsetHeight;
+            let isBottom = document.documentElement.scrollTop + window.innerHeight >=
+                document.documentElement.offsetHeight - bottomScrollOffset;
 
-            if (isBottom.value && !isLoading.value) {
-                doFetch({newsCount: 3});
-            }
-
-        });
-
-        onMounted(() => {
-            doFetch({newsCount: 5});
-        })
-
-        // news.value = data.value;
-
-        watchEffect(() => {
-            if (data.value) {
-                news.value = news.value.concat(data.value);
-                console.log(news.value);
+            if (isBottom && !isLoading.value) {
+                fetchNews({newsCount: 3})
+                    .then(response => {
+                        news.value = [...news.value, ...response.data];
+                })
             }
         });
 
+        /**
+         * Remove NewsItem
+         * @param {Object} newsItem Новость
+         */
         function remove(newsItem) {
             news.value = news.value.filter(currentNewsItem => {
                 return currentNewsItem !== newsItem;
             })
         }
 
+        onMounted(() => {
+            fetchNews({newsCount: internalInstance.root.data.newsCount})
+                .then(response => {
+                    news.value = [...news.value, ...response.data];
+                });
+        })
+
         return {
-            news, data, error, isLoading, remove
+            news, isLoading, remove
         }
     },
-    mounted() {
-        // this.news = this.fetchNews(this.$root.newsCount);
-        // this.initScroll();
-    }
 }
 </script>
 
@@ -107,6 +66,7 @@ export default {
     }
     &__list {
         position: relative;
+        min-height: 50vh;
     }
     &__item {
         transition: all .8s ease;

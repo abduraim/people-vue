@@ -29,7 +29,7 @@ export default {
     name: "App",
     data() {
         return {
-            newsCount: 2,       // Кол-во выводимых новостей на страницу
+            newsCount: 10,      // Кол-во выводимых новостей на страницу
             refreshDelay: 2,    // Задержка обновления в секундах
         }
     },
@@ -37,6 +37,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "resources/scss/variables";
+
 .app {
     &__title {
         text-align: center;
@@ -52,12 +54,12 @@ export default {
             }
             &__link {
                 text-decoration: none;
-                color: blue;
+                color: $mainColor;
                 &:hover {
                     text-decoration: underline;
                 }
                 &.router-link-active {
-                    color: black;
+                    color: #000;
                 }
             }
         }

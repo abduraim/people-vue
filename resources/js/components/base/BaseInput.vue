@@ -5,7 +5,7 @@
                :type="type"
                :id="id"
                :value="modelValue"
-               @input="$emit('update:modelValue', $event.target.value)">
+               @input="updateValue">
     </div>
 </template>
 
@@ -38,6 +38,13 @@ export default {
             },
         },
     },
+    setup(props, context) {
+        const updateValue = (event) => {
+            context.emit('update:modelValue', event.target.value);
+        }
+
+        return { updateValue }
+    }
 }
 </script>
 

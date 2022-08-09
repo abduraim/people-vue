@@ -12,15 +12,13 @@
         </div>
 
         <h2 class="news-item__title">
-            <router-link :to="{name: 'news-item', params: {id: newsItem.id}}">
+            <router-link :to="{name: 'news-item', params: {id: newsItem.id}}" class="news-item__title_link">
                 {{ newsItem.title }}
             </router-link>
         </h2>
 
-
-
         <div class="news-item__description">
-            {{ newsItem.description }}
+            {{ newsItem.slug }}
         </div>
 
         <button class="news-item__remove-btn" @click="remove" title="Удалить новость">✕</button>
@@ -62,9 +60,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "resources/scss/variables";
+
 $borderSize: 2px;
-$increaseColor: green;
-$decreaseColor: red;
+$increaseColor: $successColor;
+$decreaseColor: $dangerColor;
 
 .news-item {
     width: 100%;
@@ -76,6 +76,9 @@ $decreaseColor: red;
 
     &__title {
         margin: 0 0 1rem;
+        &_link {
+            color: $mainColor;
+        }
     }
 
     &__rating {
