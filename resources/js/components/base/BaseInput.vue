@@ -4,8 +4,11 @@
         <input class="base-input__input"
                :type="type"
                :id="id"
+               :min="min"
+               :max="max"
                :value="modelValue"
-               @input="updateValue">
+               @input="$emit('update:modelValue', $event.target.value)"
+        >
     </div>
 </template>
 
@@ -37,14 +40,9 @@ export default {
                 ].indexOf(value) !== -1
             },
         },
+        min: Number,
+        max: Number,
     },
-    setup(props, context) {
-        const updateValue = (event) => {
-            context.emit('update:modelValue', event.target.value);
-        }
-
-        return { updateValue }
-    }
 }
 </script>
 
@@ -54,13 +52,16 @@ export default {
     flex-direction: column;
     align-items: flex-start;
     margin-bottom: 2rem;
+
     &:last-child {
         margin-bottom: 0;
     }
+
     &__label {
         margin-bottom: .3rem;
         max-width: 20rem;
     }
+
     &__input {
         display: flex;
         height: 2rem;

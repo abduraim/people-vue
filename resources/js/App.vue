@@ -29,8 +29,8 @@ export default {
     name: "App",
     data() {
         return {
-            newsCount: 10,      // Кол-во выводимых новостей на страницу
-            refreshDelay: 2,    // Задержка обновления в секундах
+            perPage: 10,        // Кол-во выводимых новостей на страницу
+            refreshDelay: 0,    // Задержка обновления в секундах
         }
     },
 }
@@ -43,21 +43,26 @@ export default {
     &__title {
         text-align: center;
     }
+
     &__nav {
         .navigation {
             list-style: none;
             margin: 0;
             padding: 0;
             display: flex;
+
             &__item {
                 margin-right: 2rem;
             }
+
             &__link {
                 text-decoration: none;
                 color: $mainColor;
+
                 &:hover {
                     text-decoration: underline;
                 }
+
                 &.router-link-active {
                     color: #000;
                 }

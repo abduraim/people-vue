@@ -1,47 +1,46 @@
 <template>
     <div class="news-item" v-if="newsItem">
-        <router-link :to="{name: 'news-list'}" class="news-item__back-link">Назад к списку новостей</router-link>
+        <router-link :to="{name: 'news-list'}" class="news-item__back-link">&larr; Назад к списку новостей</router-link>
         <h2 class="news-item__title">{{ newsItem.title }}</h2>
         <p class="news-item__slug">{{ newsItem.slug }}</p>
     </div>
 </template>
 
 <script>
-import { useFetchNews} from "../../composables/useFetchNews";
-import { ref, onMounted } from "vue";
-import { useRoute } from 'vue-router'
+import {onMounted} from "vue";
+import {useRoute} from 'vue-router'
+import {useFetchNews} from "../../composables/useFetchNews";
 
 export default {
     name: "Item",
     setup() {
         const route = useRoute();
-        const { fetchNewsItem } = useFetchNews();
-
-        const newsItem = ref(null);
+        const {fetchNewsItem, newsItem} = useFetchNews();
 
         onMounted(() => {
             fetchNewsItem({id: route.params.id})
-                .then(response => {
-                    newsItem.value = response.data;
-                    console.log(newsItem.value.title)
-                });
         })
 
-        return { newsItem }
+        return {newsItem}
     }
 }
 </script>
 
 <style lang="scss" scoped>
-    .news-item {
-        &__back-link {
+@import "resources/scss/variables";
 
-        }
-        &__title {
-
-        }
-        &__slug {
-
-        }
+.news-item {
+    &__back-link {
+        color: $mainColor;
+        text-decoration: none;
     }
+
+    &__title {
+
+    }
+
+    &__slug {
+
+    }
+}
 </style>

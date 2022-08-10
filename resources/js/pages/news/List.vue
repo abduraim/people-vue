@@ -1,26 +1,30 @@
 <template>
     <div class="news">
         <h3 class="news__title">Последние новости</h3>
+
         <transition-group name="list-complete" tag="div" class="news__list" :class="{loading:isLoading}">
-            <template v-for="newsItem in news" :key="newsItem">
-                <NewsItem class="news__item" :newsItem="newsItem" @remove="remove" />
+            <template v-for="newsItem in newsList" :key="newsItem">
+                <NewsItem class="news__item" :newsItem="newsItem" @remove="removeNewsItem(newsItem.id)" />
             </template>
         </transition-group>
     </div>
 </template>
 
 <script>
+import NewsItem from "../../components/news/NewsItem.vue";
 import { useEventListener } from "../../composables/event";
 import { useFetchNews } from "../../composables/useFetchNews";
-import { ref, onMounted, getCurrentInstance } from 'vue'
+import { ref, onMounted } from 'vue'
 
 export default {
     name: "List",
+    components: {
+        NewsItem,
+    },
     setup() {
-        const internalInstance = getCurrentInstance();
-        const { fetchNews, isLoading } = useFetchNews()
+        const { newsList, fetchNews, isLoading, removeNewsItem } = useFetchNews()
 
-        const news = ref([]);
+        const page = ref(1);
         const bottomScrollOffset = 50;
 
         useEventListener(window, 'scroll', () => {
@@ -28,32 +32,17 @@ export default {
                 document.documentElement.offsetHeight - bottomScrollOffset;
 
             if (isBottom && !isLoading.value) {
-                fetchNews({newsCount: 3})
-                    .then(response => {
-                        news.value = [...news.value, ...response.data];
-                })
+                page.value += 1;
+                fetchNews({page: page.value})
             }
         });
 
-        /**
-         * Remove NewsItem
-         * @param {Object} newsItem Новость
-         */
-        function remove(newsItem) {
-            news.value = news.value.filter(currentNewsItem => {
-                return currentNewsItem !== newsItem;
-            })
-        }
-
         onMounted(() => {
-            fetchNews({newsCount: internalInstance.root.data.newsCount})
-                .then(response => {
-                    news.value = [...news.value, ...response.data];
-                });
+            fetchNews({page: page.value});
         })
 
         return {
-            news, isLoading, remove
+            newsList, isLoading, removeNewsItem
         }
     },
 }

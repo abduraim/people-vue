@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>4people Тестовое задание Фронтенд</title>
+    <title>Тестовое задание Фронтенд 4people</title>
 
-        <!-- Fonts -->
-        <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
-        @vite(['resources/scss/app.scss', 'resources/js/app.js'])
-    </head>
-    <body>
-    <div id="app"></div>
-    </body>
+    @vite(['resources/scss/app.scss', 'resources/js/app.js'])
+</head>
+<body>
+<div id="app"></div>
+</body>
 </html>

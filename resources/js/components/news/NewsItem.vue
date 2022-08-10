@@ -21,11 +21,13 @@
             {{ newsItem.slug }}
         </div>
 
-        <button class="news-item__remove-btn" @click="remove" title="Удалить новость">✕</button>
+        <button class="news-item__remove-btn" @click="$emit('remove', newsItem)" title="Удалить новость">✕</button>
     </div>
 </template>
 
 <script>
+import {ref} from 'vue';
+
 export default {
     name: "NewsItem",
     emits: ['remove'],
@@ -35,26 +37,33 @@ export default {
             default: {}
         },
     },
-    data() {
-        return {
-            ratingChangingClass: '',
-        }
-    },
-    methods: {
-        changeRating(value = 1) {
-            this.newsItem.rating += value;
+    setup(props) {
+        const ratingChangingClass = ref('');
 
-            this.ratingChangingClass = value > 0
+        /**
+         * Изменение рейтинга
+         * @param {Number} value
+         */
+        function changeRating(value = 1) {
+            props.newsItem.rating += value;
+            setChangeRatingAnimationClass(value);
+        }
+
+        /**
+         * Анимация изменения рейтинга
+         * @param {Number} value
+         */
+        function setChangeRatingAnimationClass(value) {
+            ratingChangingClass.value = value > 0
                 ? 'increase'
                 : 'decrease';
 
             setTimeout(() => {
-                this.ratingChangingClass = '';
+                ratingChangingClass.value = '';
             }, 300);
-        },
-        remove() {
-            this.$emit('remove', this.newsItem);
         }
+
+        return {ratingChangingClass, changeRating}
     },
 }
 </script>
@@ -76,6 +85,7 @@ $decreaseColor: $dangerColor;
 
     &__title {
         margin: 0 0 1rem;
+
         &_link {
             color: $mainColor;
         }
@@ -84,17 +94,21 @@ $decreaseColor: $dangerColor;
     &__rating {
         margin-bottom: 1rem;
     }
+
     .rating {
         display: flex;
         align-items: center;
+
         &__text {
             margin-right: 1rem;
         }
+
         &__value {
             text-align: center;
             min-width: 2rem;
             padding: 0 .3rem;
         }
+
         &__btn {
             border: none;
             background-color: transparent;
@@ -106,14 +120,17 @@ $decreaseColor: $dangerColor;
             justify-content: center;
             align-items: center;
             transition: background-color ease .2s;
+
             &_type {
                 &_increase {
                     color: $increaseColor
                 }
+
                 &_decrease {
                     color: $decreaseColor
                 }
             }
+
             &:hover {
                 background-color: lightgrey;
             }
@@ -133,6 +150,7 @@ $decreaseColor: $dangerColor;
         background-color: transparent;
         font-size: 2rem;
         transition: color ease .2s;
+
         &:hover {
             color: red;
         }
@@ -141,16 +159,19 @@ $decreaseColor: $dangerColor;
     &.increase {
         animation-name: increase;
     }
+
     &.decrease {
         animation-name: decrease;
     }
 }
+
 @keyframes increase {
     0% {
         border: $borderSize solid $increaseColor;
         background-color: $increaseColor;
     }
 }
+
 @keyframes decrease {
     0% {
         border: $borderSize solid $decreaseColor;

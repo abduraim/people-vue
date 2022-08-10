@@ -2,10 +2,10 @@ import {createRouter, createWebHistory} from 'vue-router'
 
 const routes = [
     {
-        path: '',
+        path: '/',
         children: [
             {
-                path: '/',
+                path: '',
                 name: 'index',
                 component: () => import('../pages/Index.vue'),
             },
@@ -42,6 +42,11 @@ const routes = [
                 //         component: () => import('../pages/news/Item.vue')
                 //     },
                 // ]
+            },
+            {
+                path: ':pathMatch(.*)*',
+                name: 'not-found',
+                component: () => import('../pages/errors/NotFound.vue'),
             },
         ]
     },

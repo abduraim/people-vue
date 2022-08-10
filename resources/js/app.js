@@ -1,20 +1,15 @@
 import './bootstrap';
 
 import { createApp } from 'vue';
+import App from './App.vue';
 import router from './router';
 
-import App from './App.vue';
+import BaseInput from "./components/base/BaseInput.vue";
 
 const app = createApp(App);
 
-import BaseInput from "./components/base/BaseInput.vue";
-import NewsItem from "./components/news/NewsItem.vue";
-
-
 app
-    .component("BaseInput", BaseInput)
-    .component("NewsItem", NewsItem);
-
+    .component("BaseInput", BaseInput);
 
 app
     .use(router)

@@ -1,50 +1,93 @@
-import { ref } from 'vue'
-import { getCurrentInstance } from 'vue'
+import {ref, getCurrentInstance} from 'vue'
 
 export function useFetchNews() {
-    const isLoading = ref(true)
-    const counter = ref(0);
-    
     const internalInstance = getCurrentInstance();
     
-    // Fetch News
+    const newsList = ref([]);                   // Список новостей
+    const newsItem = ref(null);                 // Определенная новость
+    const error = ref(null);                    // Ошибка
+    const isLoading = ref(true);                // Флаг загрузки
+    
+    /**
+     * Загрузка списка новостей
+     * @param payload
+     * @returns {Promise<void>}
+     */
     async function fetchNews(payload) {
-        
         isLoading.value = true;
-        await timeout(internalInstance.root.data.refreshDelay * 1000);
-    
-        let news = [];
-        for (let i = 1; i <= payload.newsCount; i++) {
-            counter.value += 1;
-            news.push({
-                id: counter.value,
-                title: `title ${counter.value}`,
-                rating: Math.floor(Math.random() * 5),
-                slug: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur corporis cum necessitatibus nihil obcaecati, officiis perferendis rerum? Adipisci asperiores cumque debitis libero nisi non obcaecati pariatur, rerum temporibus unde veritatis? ${counter.value}`,
-            })
-        }
-        isLoading.value = false;
         
-        return {
-            data: news
-        };
+        await fakeDelay();
+        
+        newsList.value = [...newsList.value, ...getFakeNews(payload.page)];
+        
+        isLoading.value = false;
     }
     
+    /**
+     * Загрузка определенной новости
+     * @param {Object} payload
+     * @returns {Promise<{data: {rating: number, id, title: string, slug: string}}>}
+     */
     async function fetchNewsItem(payload) {
+        newsItem.value = getFakeNewsItem(payload.id);
+    }
+    
+    /**
+     * Удаление новости
+     * @param {Number} newsItemId
+     */
+    function removeNewsItem(newsItemId) {
+        newsList.value = newsList.value.filter(currentNewsItem => {
+            return currentNewsItem.id !== newsItemId;
+        })
+    }
+    
+    /**
+     * Генерация списка фейковых новостей
+     * @param {Number} page
+     * @returns {*[]}
+     */
+    function getFakeNews(page) {
+        let perPage = internalInstance.root.data.perPage;
+        let to = page * perPage;
+        let from = (page - 1) * perPage + 1;
+        
+        let news = [];
+        for (let index = from; index <= to; index++) {
+            news.push(getFakeNewsItem(index))
+        }
+        return news;
+    }
+    
+    /**
+     * Генерация одной фейковой новости
+     * @param { Number } index
+     * @returns {{rating: number, id, title: string, slug: string}}
+     */
+    function getFakeNewsItem(index) {
         return {
-            data: {
-                id: payload.id,
-                title: `title ${payload.id}`,
-                rating: Math.floor(Math.random() * 5),
-                slug: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur corporis cum necessitatibus nihil obcaecati, officiis perferendis rerum? Adipisci asperiores cumque debitis libero nisi non obcaecati pariatur, rerum temporibus unde veritatis? ${counter.value}`,
-            }
-        };
+            id: index,
+            title: `title ${index}`,
+            rating: Math.floor(Math.random() * 5),
+            slug: `Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequatur corporis cum necessitatibus nihil obcaecati, officiis perferendis rerum? Adipisci asperiores cumque debitis libero nisi non obcaecati pariatur, rerum temporibus unde veritatis?`,
+        }
     }
     
-    // Fake refresh
-    function timeout(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    /**
+     * Фейковая задержка загрузки
+     * @returns {Promise<unknown>}
+     */
+    function fakeDelay() {
+        return new Promise(resolve => setTimeout(resolve, internalInstance.root.data.refreshDelay * 1000));
     }
     
-    return { fetchNews, fetchNewsItem, isLoading }
+    return {
+        removeNewsItem,
+        fetchNews,
+        fetchNewsItem,
+        isLoading,
+        newsList,
+        newsItem,
+        error,
+    }
 }
