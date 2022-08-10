@@ -2,14 +2,12 @@
 
 ## Минимальные требования
 
----
 - php8.1
 - node 18.2.0
 - composer 2
 
 ## Установка
 
----
 - `composer install`
 - `npm install`
 - Из файла `.env.exapmle` создать `.env`
